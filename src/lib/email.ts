@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Only initialize Resend if API key is available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 interface SendEmailOptions {
   to: string;
@@ -9,6 +10,11 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: SendEmailOptions) {
+  if (!resend) {
+    console.warn('Resend API key not configured. Email not sent.');
+    throw new Error('Email service not configured');
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'PERON.ID <onboarding@resend.dev>', // Change to your verified domain
