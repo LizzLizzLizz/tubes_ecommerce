@@ -55,9 +55,13 @@ export async function POST(request: Request) {
 
   try {
     const json = await request.json();
-    const { items, address, total } = json;
+    const { items, address, shippingCost = 0, shippingCourier, shippingService } = json;
 
-    // Check stock availability for all items
+    // Validate and calculate total on server-side
+    let calculatedSubtotal = 0;
+    const validatedItems = [];
+
+    // Check stock availability and validate prices for all items
     for (const item of items) {
       const product = await prisma.product.findUnique({
         where: { id: item.productId },
@@ -70,6 +74,9 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+
+      // Get actual price from database (not from client)
+      let actualPrice = product.price;
 
       // Check if product has variants
       if (product.variants && product.variants.length > 0) {
@@ -95,6 +102,9 @@ export async function POST(request: Request) {
             { status: 400 }
           );
         }
+
+        // Use variant price if exists, otherwise use product price
+        // actualPrice = variant.price || product.price; // If variants have price
       } else {
         // Product has no variants - check product stock
         if (product.stock < item.quantity) {
@@ -104,12 +114,28 @@ export async function POST(request: Request) {
           );
         }
       }
+
+      // Calculate item subtotal using server-side price
+      const itemSubtotal = actualPrice * item.quantity;
+      calculatedSubtotal += itemSubtotal;
+
+      // Store validated item with actual price
+      validatedItems.push({
+        productId: item.productId,
+        variantId: item.variantId || null,
+        variantName: item.variantName || null,
+        quantity: item.quantity,
+        price: actualPrice, // Use actual price from database
+      });
     }
+
+    // Calculate total on server (subtotal + shipping)
+    const calculatedTotal = calculatedSubtotal + shippingCost;
 
     // Create order and reduce stock in a transaction
     const order = await prisma.$transaction(async (tx) => {
-      // Reduce stock for each item
-      for (const item of items) {
+      // Reduce stock for each validated item
+      for (const item of validatedItems) {
         const product = await tx.product.findUnique({
           where: { id: item.productId },
           include: { variants: true },
@@ -138,7 +164,7 @@ export async function POST(request: Request) {
         }
       }
 
-      // Create the order
+      // Create the order with server-calculated total
       return await tx.order.create({
         data: {
           user: {
@@ -148,18 +174,21 @@ export async function POST(request: Request) {
           },
           status: 'UNPAID',
           address,
-          total,
+          total: calculatedTotal, // Use server-calculated total
+          shippingCost: shippingCost,
+          shippingCourier: shippingCourier || null,
+          shippingService: shippingService || null,
           items: {
-            create: items.map((item: any) => ({
+            create: validatedItems.map((item) => ({
               product: {
                 connect: {
                   id: item.productId,
                 },
               },
               quantity: item.quantity,
-              price: item.price,
-              variantId: item.variantId || null,
-              variantName: item.variantName || null,
+              price: item.price, // Use validated price from database
+              variantId: item.variantId,
+              variantName: item.variantName,
             })),
           },
         },
