@@ -17,7 +17,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'izzudinalqossam20@gmail.com', // Testing domain - can only send to izzudinalqossam20@gmail.com. For production, verify a domain at resend.com/domains
+      from: 'izzudinalqossam.me', // Testing domain - can only send to izzudinalqossam20@gmail.com. For production, verify a domain at resend.com/domains
       to: [to],
       subject,
       html,
