@@ -17,6 +17,7 @@ export async function POST(request: Request) {
     const {
       order_id,
       transaction_status,
+      status_code,
       fraud_status,
       signature_key,
       gross_amount,
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
       return Response.json({ status: 'ok', message: 'Test notification received' });
     }
 
-    // Verify signature
+    // Verify signature - Midtrans uses status_code NOT transaction_status
     const serverKey = process.env.MIDTRANS_SERVER_KEY || '';
     
     // Convert gross_amount to proper format (remove decimals if present)
@@ -36,13 +37,14 @@ export async function POST(request: Request) {
     
     const expectedSignature = crypto
       .createHash('sha512')
-      .update(`${order_id}${transaction_status}${amount}${serverKey}`)
+      .update(`${order_id}${status_code}${amount}${serverKey}`)
       .digest('hex');
 
     console.log('Signature verification:', {
       received: signature_key,
       expected: expectedSignature,
       order_id,
+      status_code,
       transaction_status,
       amount,
       match: signature_key === expectedSignature
