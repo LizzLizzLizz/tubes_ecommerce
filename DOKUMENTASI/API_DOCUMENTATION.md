@@ -2,9 +2,9 @@
 
 Dokumentasi lengkap untuk semua API endpoint yang tersedia di aplikasi PERON.ID.
 
-**Base URL:** `http://localhost:3000`
+**Base URL:** `https://tubesecommerce.vercel.app`
 
-**Environment:** Development
+**Environment:** Production
 
 **API Response Format:** All APIs follow company standard with consistent response structure
 
@@ -122,7 +122,7 @@ Content-Type: application/json
 
 **Example cURL:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST https://tubesecommerce.vercel.app/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -206,7 +206,7 @@ Cookie: next-auth.session-token=YOUR_SESSION_TOKEN
 
 **Example cURL:**
 ```bash
-curl -X GET http://localhost:3000/api/user/profile \
+curl -X GET https://tubesecommerce.vercel.app/api/user/profile \
   -H "Cookie: next-auth.session-token=YOUR_TOKEN"
 ```
 
@@ -269,7 +269,7 @@ Cookie: next-auth.session-token=YOUR_SESSION_TOKEN
 
 **Example cURL:**
 ```bash
-curl -X PATCH http://localhost:3000/api/user/profile \
+curl -X PATCH https://tubesecommerce.vercel.app/api/user/profile \
   -H "Content-Type: application/json" \
   -H "Cookie: next-auth.session-token=YOUR_TOKEN" \
   -d '{
@@ -320,13 +320,13 @@ Mendapatkan daftar semua produk dengan filter opsional.
 **Example Requests:**
 ```bash
 # Get all products
-curl http://localhost:3000/api/products
+curl https://tubesecommerce.vercel.app/api/products
 
 # Search products
-curl http://localhost:3000/api/products?search=montana
+curl https://tubesecommerce.vercel.app/api/products?search=montana
 
 # Filter by category
-curl http://localhost:3000/api/products?category=clcat123
+curl https://tubesecommerce.vercel.app/api/products?category=clcat123
 ```
 
 ---
@@ -370,7 +370,7 @@ Mendapatkan detail produk berdasarkan ID.
 
 **Example cURL:**
 ```bash
-curl http://localhost:3000/api/products/clxyz123
+curl https://tubesecommerce.vercel.app/api/products/clxyz123
 ```
 
 ---
@@ -403,7 +403,7 @@ Mendapatkan daftar semua kategori produk.
 
 **Example cURL:**
 ```bash
-curl http://localhost:3000/api/categories
+curl https://tubesecommerce.vercel.app/api/categories
 ```
 
 ---
@@ -497,7 +497,7 @@ Content-Type: application/json
 
 **Example cURL:**
 ```bash
-curl -X POST http://localhost:3000/api/shipping/rates \
+curl -X POST https://tubesecommerce.vercel.app/api/shipping/rates \
   -H "Content-Type: application/json" \
   -d '{
     "destination_postal_code": "10110",
@@ -601,7 +601,7 @@ Cookie: next-auth.session-token=YOUR_SESSION_TOKEN
 
 **Example cURL:**
 ```bash
-curl -X POST http://localhost:3000/api/payment/create \
+curl -X POST https://tubesecommerce.vercel.app/api/payment/create \
   -H "Content-Type: application/json" \
   -H "Cookie: next-auth.session-token=YOUR_TOKEN" \
   -d '{
@@ -747,7 +747,7 @@ Content-Type: application/json
 ### Getting Session Token
 
 1. **Login via Browser:**
-   - Buka http://localhost:3000/login
+   - Buka https://tubesecommerce.vercel.app/login
    - Login dengan credentials
    - Buka DevTools (F12) → Application → Cookies
    - Copy value dari `next-auth.session-token`
@@ -769,8 +769,8 @@ Saat ini belum ada rate limiting. Untuk production, disarankan menambahkan:
 - Rate limit per user: 1000 requests/hour
 
 ### CORS
-Development mode: CORS disabled  
-Production: Harus dikonfigurasi sesuai domain frontend
+Production mode: CORS configured for Vercel deployment  
+Custom domains: Configure as needed
 
 ### Environment Variables
 Pastikan file `.env` sudah dikonfigurasi dengan benar:
@@ -780,7 +780,7 @@ DATABASE_URL="file:./dev.db"
 
 # NextAuth
 NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_URL="https://tubesecommerce.vercel.app"
 
 # Midtrans (Sandbox)
 MIDTRANS_SERVER_KEY="Mid-server-xxx"
@@ -801,7 +801,7 @@ BITESHIP_BASE_URL="https://api.biteship.com"
 Import collection untuk testing:
 1. Download: `PERON-ID-API-Collection.json` (if available)
 2. Import di Postman: File → Import
-3. Set environment variable `base_url` = `http://localhost:3000`
+3. Set environment variable `base_url` = `https://tubesecommerce.vercel.app`
 
 ### Test Credentials
 ```
@@ -825,6 +825,6 @@ Untuk pertanyaan atau issues:
 
 ---
 
-**Last Updated:** November 25, 2025  
+**Last Updated:** December 20, 2025  
 **API Version:** 1.0.0  
-**Environment:** Development
+**Environment:** Production (Vercel)
