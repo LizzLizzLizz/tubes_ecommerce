@@ -68,13 +68,6 @@ export async function POST(request: Request) {
 
     if (!order) {
       console.error('Order not found:', order_id);
-      // Try to find by payment token as fallback
-      const orderByToken = await prisma.order.findFirst({
-        where: { paymentToken: order_id },
-      });
-      
-      console.log('Order by payment token:', orderByToken ? 'FOUND' : 'NOT FOUND');
-      
       // Return 200 even if order not found - Midtrans expects 200
       return Response.json({ 
         status: 'error', 
