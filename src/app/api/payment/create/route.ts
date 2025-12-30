@@ -249,6 +249,14 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error('Payment creation error:', error);
+    // Return detailed error in development
+    if (process.env.NODE_ENV === 'development') {
+      return errorResponse(
+        'Failed to create payment', 
+        500, 
+        { error: error instanceof Error ? error.message : String(error) }
+      );
+    }
     return errorResponse('Failed to create payment', 500);
   }
 }
